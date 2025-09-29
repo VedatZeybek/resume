@@ -8,11 +8,21 @@ export default function Projects() {
   useEffect(() => {
     async function fetchRepos() {
       try {
+        // Önce backend API'ye bağlanmayı dene
         const res = await fetch("http://localhost:5000/api/projects");
+        if (!res.ok) throw new Error("Backend not available");
         const data = await res.json();
         setRepos(data);
       } catch (err) {
-        console.error("API error:", err);
+        console.warn("Backend çalışmıyor, projects.json'dan yükleniyor:", err);
+        try {
+          // fallback: public klasöründeki JSON'dan oku
+          const res = await fetch("backend/projects.json");
+          const data = await res.json();
+          setRepos(data);
+        } catch (jsonErr) {
+          console.error("Fallback JSON da yüklenemedi:", jsonErr);
+        }
       }
     }
     fetchRepos();
