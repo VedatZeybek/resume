@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-# VedatZeybek.github.io
+### to website:  https://vedatzeybek.github.io/resume/
 =======
 # React + Vite
 
