@@ -2,6 +2,7 @@
 // Also create src/main.jsx as shown in the comment below and a basic index.html from Vite
 
 import React from 'react'
+import Projects from './Projects';
 
 
 // Simple CSS (create src/styles.css and import it in main.jsx)
@@ -113,6 +114,7 @@ export default function App() {
       <main>
         <Hero />
         <About />
+        <Projects />
         <Contact />
       </main>
       <Footer />

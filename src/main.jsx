@@ -9,6 +9,5 @@ import Navbar from './Navbar.jsx'
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <App />
-    <Projects />
   </StrictMode>,
 )

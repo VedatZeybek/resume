@@ -82,7 +82,7 @@ app.post('/api/refresh-projects', async (req, res) => {
 
 // Server başlatıldığında otomatik olarak GitHub'dan çek
 async function initServer() {
-  const GITHUB_USERNAME = 'VedatZeybek'; // Kendi GitHub kullanıcı adınızı buraya yazın
+  const GITHUB_USERNAME = 'VedatZeybek';
   
   console.log('🚀 Server başlatılıyor...');
   
