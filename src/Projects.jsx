@@ -35,10 +35,10 @@ const Projects = () => {
   if (loading) {
     return (
       <div className="projects">
-        <h2>Projelerim</h2>
+        <h2>My Projects</h2>
         <div className="loading">
           <div className="spinner"></div>
-          <p>Projeler yükleniyor...</p>
+          <p>Projects Updating...</p>
         </div>
       </div>
     );
