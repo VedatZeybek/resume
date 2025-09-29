@@ -57,6 +57,7 @@ const Projects = () => {
   }
 
   return (
+    <section id="projects">
     <div className="projects">
       <h2>Projelerim ({projects.length})</h2>
       <div className="grid">
@@ -77,6 +78,7 @@ const Projects = () => {
         ))}
       </div>
     </div>
+    </section>
   );
 };
 

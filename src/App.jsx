@@ -4,6 +4,8 @@
 import React from 'react'
 import Projects from './Projects';
 
+import soft1 from './assets/soft1.jpeg';
+
 
 // Simple CSS (create src/styles.css and import it in main.jsx)
 // You can replace with Tailwind later if you like.
@@ -62,12 +64,10 @@ function About() {
     <section id="about" className="about container">
       <h2>About Me</h2>
       <div className="about-grid">
-        {/* Profil resmi */}
         <div className="about-image">
-          <img src="/me.jpg" alt="Vedat profile" />
+          <img src={soft1} alt="Vedat profile" />
         </div>
 
-        {/* Yazı kısmı */}
         <div className="about-text">
           <h3>I'm Vedat 👨‍💻</h3>
           <p>
