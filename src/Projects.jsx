@@ -1,45 +1,83 @@
-// Projects.jsx
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import './project.css';
 
-export default function Projects() {
-  const [repos, setRepos] = useState([]);
+const Projects = () => {
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    async function fetchRepos() {
-      try {
-        // Önce backend API'ye bağlanmayı dene
-        const res = await fetch("http://localhost:5000/api/projects");
-        if (!res.ok) throw new Error("Backend not available");
-        const data = await res.json();
-        setRepos(data);
-      } catch (err) {
-        console.warn("Backend çalışmıyor, projects.json'dan yükleniyor:", err);
-        try {
-          // fallback: public klasöründeki JSON'dan oku
-          const res = await fetch("backend/projects.json");
-          const data = await res.json();
-          setRepos(data);
-        } catch (jsonErr) {
-          console.error("Fallback JSON da yüklenemedi:", jsonErr);
-        }
-      }
-    }
-    fetchRepos();
+    fetchProjects();
   }, []);
 
+  const fetchProjects = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Public klasöründeki projects.json'dan veri çek
+      const response = await fetch('projects.json');
+      
+      if (!response.ok) {
+        throw new Error('Projeler yüklenemedi');
+      }
+      
+      const data = await response.json();
+      setProjects(data);
+    } catch (err) {
+      setError(err.message);
+      console.error('❌ Proje yükleme hatası:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="projects">
+        <h2>Projelerim</h2>
+        <div className="loading">
+          <div className="spinner"></div>
+          <p>Projeler yükleniyor...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="projects">
+        <h2>Projelerim</h2>
+        <div className="error">
+          <p>❌ Hata: {error}</p>
+          <button onClick={fetchProjects}>Tekrar Dene</button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <section id="projects" className="projects container">
-      <h2>Projects</h2>
+    <div className="projects">
+      <h2>Projelerim ({projects.length})</h2>
       <div className="grid">
-        {repos.map(repo => (
-          <article key={repo.id} className="card">
-            <h3>{repo.name}</h3>
-            <p>{repo.description || "No description"}</p>
-            <a href={repo.html_url} target="_blank" rel="noreferrer">View on GitHub</a>
-          </article>
+        {projects.map((project) => (
+          <div key={project.id} className="card">
+            <div>
+              <h3>{project.name}</h3>
+              <p>{project.description || 'Açıklama yok'}</p>
+            </div>
+            <a 
+              href={project.html_url} 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              GitHub'da Gör →
+            </a>
+          </div>
         ))}
       </div>
-    </section>
+    </div>
   );
-}
+};
+
+export default Projects;

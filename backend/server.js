@@ -1,178 +1,112 @@
-// ...existing code...
+const express = require('express');
+const cors = require('cors');
+const fs = require('fs').promises;
+const path = require('path');
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
+const PORT = 5000;
+
+// CORS ayarları - Frontend'den gelen isteklere izin ver
 app.use(cors());
+app.use(express.json());
 
-// Endpoint to update projects.json from GitHub
-app.post("/api/update-projects", async (req, res) => {
+// GitHub API'den projeleri çek ve projects.json'a kaydet
+async function fetchGitHubRepos(username) {
   try {
-    const gh = await fetch(`https://api.github.com/users/${GITHUB_USER}/repos`);
-    const repos = await gh.json();
-    await fs.writeFile(PROJECTS_FILE, JSON.stringify(repos, null, 2));
-    res.json({ message: 'projects.json updated', count: repos.length });
+    const fetch = (await import('node-fetch')).default;
+    const response = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=100`);
+    
+    if (!response.ok) {
+      throw new Error(`GitHub API Error: ${response.status}`);
+    }
+    
+    const repos = await response.json();
+    
+    // Sadece gerekli bilgileri filtrele
+    const filteredRepos = repos.map(repo => ({
+      id: repo.id,
+      name: repo.name,
+      description: repo.description,
+      html_url: repo.html_url,
+      homepage: repo.homepage,
+      language: repo.language,
+      stargazers_count: repo.stargazers_count,
+      forks_count: repo.forks_count,
+      created_at: repo.created_at,
+      updated_at: repo.updated_at,
+      topics: repo.topics
+    }));
+    
+    // projects.json dosyasına kaydet
+    const filePath = path.join(__dirname, 'projects.json');
+    await fs.writeFile(filePath, JSON.stringify(filteredRepos, null, 2));
+    
+    console.log(`✅ ${filteredRepos.length} proje GitHub'dan çekildi ve kaydedildi`);
+    return filteredRepos;
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update projects.json' });
-  }
-});
-import express from "express";
-import fetch from "node-fetch";
-import cors from "cors";
-import fs from "fs/promises";
-import path from "path";
-import https from "https";
-import { fileURLToPath } from 'url';
-
-// ...existing code...
-
-// projects.json dosyasının yolu
-const PROJECTS_FILE = path.join(__dirname, 'projects.json');
-
-// Projects.json dosyasını okuma fonksiyonu
-async function readProjectsFile() {
-  try {
-    const data = await fs.readFile(PROJECTS_FILE, 'utf8');
-    return JSON.parse(data);
-  } catch (error) {
-    console.log('Projects.json dosyası bulunamadı, boş array döndürülüyor');
-    return [];
+    console.error('❌ GitHub API hatası:', error.message);
+    throw error;
   }
 }
 
-// Projects.json dosyasına yazma fonksiyonu
-async function writeProjectsFile(projects) {
+// Frontend'e projects.json'u sun
+app.get('/api/projects', async (req, res) => {
   try {
-    await fs.writeFile(PROJECTS_FILE, JSON.stringify(projects, null, 2));
-    return true;
+    const filePath = path.join(__dirname, 'projects.json');
+    const data = await fs.readFile(filePath, 'utf8');
+    res.json(JSON.parse(data));
   } catch (error) {
-    console.error('Projects.json dosyasına yazma hatası:', error);
-    return false;
+    console.error('❌ projects.json okunamadı:', error.message);
+    res.status(404).json({ error: 'Projeler bulunamadı' });
   }
+});
+
+// GitHub'dan projeleri yenile (manuel tetikleme için)
+app.post('/api/refresh-projects', async (req, res) => {
+  const { username } = req.body;
+  
+  if (!username) {
+    return res.status(400).json({ error: 'GitHub kullanıcı adı gerekli' });
+  }
+  
+  try {
+    const projects = await fetchGitHubRepos(username);
+    res.json({ 
+      message: 'Projeler başarıyla güncellendi',
+      count: projects.length 
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Server başlatıldığında otomatik olarak GitHub'dan çek
+async function initServer() {
+  const GITHUB_USERNAME = 'VedatZeybek'; // Kendi GitHub kullanıcı adınızı buraya yazın
+  
+  console.log('🚀 Server başlatılıyor...');
+  
+  // İlk açılışta GitHub'dan projeleri çek
+  try {
+    await fetchGitHubRepos(GITHUB_USERNAME);
+  } catch (error) {
+    console.error('⚠️ İlk yüklemede hata oluştu, mevcut projects.json kullanılacak');
+  }
+  
+  // Her 1 saatte bir otomatik güncelle (isteğe bağlı)
+  setInterval(async () => {
+    console.log('🔄 Projeler otomatik olarak güncelleniyor...');
+    try {
+      await fetchGitHubRepos(GITHUB_USERNAME);
+    } catch (error) {
+      console.error('⚠️ Otomatik güncelleme hatası:', error.message);
+    }
+  }, 3600000); // 1 saat = 3600000ms
+  
+  app.listen(PORT, () => {
+    console.log(`✅ Server http://localhost:${PORT} adresinde çalışıyor`);
+  });
 }
 
-// GitHub'dan repos çekme (mevcut fonksiyon)
-app.get("/api/projects", async (req, res) => {
-  try {
-    const gh = await fetch("https://api.github.com/users/VedatZeybek/repos");
-    const repos = await gh.json();
-
-    const reposWithReadme = await Promise.all(
-      repos.filter(r => !r.fork).map(async (repo) => {
-        try {
-          const readmeRes = await fetch(`https://raw.githubusercontent.com/VedatZeybek/${repo.name}/${repo.default_branch}/README.md`);
-          const readmeText = await readmeRes.text();
-          return { ...repo, readme: readmeText };
-        } catch {
-          return { ...repo, readme: "" };
-        }
-      })
-    );
-
-    res.json(reposWithReadme);
-  } catch (error) {
-    res.status(500).json({ error: 'GitHub repos çekilemedi' });
-  }
-});
-
-// Local projects.json'dan projeleri getirme
-app.get("/api/local-projects", async (req, res) => {
-  try {
-    const projects = await readProjectsFile();
-    res.json(projects);
-  } catch (error) {
-    res.status(500).json({ error: 'Local projeler okunamadı' });
-  }
-});
-
-// Yeni proje ekleme
-app.post("/api/projects", async (req, res) => {
-  try {
-    const { name, description, html_url } = req.body;
-    
-    if (!name || !description) {
-      return res.status(400).json({ error: 'Name ve description gerekli' });
-    }
-
-    const projects = await readProjectsFile();
-    
-    // Yeni ID oluşturma
-    const newId = projects.length > 0 ? Math.max(...projects.map(p => p.id)) + 1 : 1;
-    
-    const newProject = {
-      id: newId,
-      name,
-      description,
-      html_url: html_url || `https://github.com/VedatZeybek/${name}`,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
-
-    projects.push(newProject);
-    
-    const success = await writeProjectsFile(projects);
-    
-    if (success) {
-      res.status(201).json(newProject);
-    } else {
-      res.status(500).json({ error: 'Proje kaydedilemedi' });
-    }
-  } catch (error) {
-    res.status(500).json({ error: 'Proje eklenirken hata oluştu' });
-  }
-});
-
-// Proje güncelleme
-const GITHUB_USER = 'VedatZeybek'; // Change to your GitHub username if needed
-app.put("/api/projects/:id", async (req, res) => {
-  try {
-    const projectId = parseInt(req.params.id);
-    const { name, description, html_url } = req.body;
-    const projects = await readProjectsFile();
-    const projectIndex = projects.findIndex(p => p.id === projectId);
-    if (projectIndex === -1) {
-      return res.status(404).json({ error: 'Proje bulunamadı' });
-    }
-    // Güncelleme
-    projects[projectIndex] = {
-      ...projects[projectIndex],
-      ...(name && { name }),
-      ...(description && { description }),
-      ...(html_url && { html_url }),
-      updated_at: new Date().toISOString()
-    };
-    const success = await writeProjectsFile(projects);
-    if (success) {
-      res.json(projects[projectIndex]);
-    } else {
-      res.status(500).json({ error: 'Proje güncellenemedi' });
-    }
-  } catch (error) {
-    res.status(500).json({ error: 'Proje güncellenirken hata oluştu' });
-  }
-});
-
-// Proje silme
-app.delete("/api/projects/:id", async (req, res) => {
-  try {
-    const projectId = parseInt(req.params.id);
-    
-    const projects = await readProjectsFile();
-    const filteredProjects = projects.filter(p => p.id !== projectId);
-    
-    if (projects.length === filteredProjects.length) {
-      return res.status(404).json({ error: 'Proje bulunamadı' });
-    }
-
-    const success = await writeProjectsFile(filteredProjects);
-    
-    if (success) {
-      res.json({ message: 'Proje silindi', deletedId: projectId });
-    } else {
-      res.status(500).json({ error: 'Proje silinemedi' });
-    }
-  } catch (error) {
-    res.status(500).json({ error: 'Proje silinirken hata oluştu' });
-  }
-});
-
-app.listen(5000, () => console.log("Server running on http://localhost:5000"));
+// Server'ı başlat
+initServer();
