@@ -1,3 +1,4 @@
+/* Projects Section */
 .projects {
   padding: 120px 120px;
 }
@@ -57,4 +58,61 @@
 
 .projects .card a:hover {
   background: #0056b3;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .projects {
+    padding: 100px 60px;
+  }
+  .projects h2 {
+    font-size: 2rem;
+    margin-bottom: 35px;
+  }
+}
+
+@media (max-width: 768px) {
+  .projects {
+    padding: 80px 30px;
+  }
+  .projects h2 {
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+  }
+  .projects .grid {
+    gap: 20px;
+  }
+  .projects .card {
+    padding: 20px;
+  }
+  .projects .card h3 {
+    font-size: 1.2rem;
+  }
+  .projects .card p {
+    font-size: 0.9rem;
+  }
+  .projects .card a {
+    padding: 8px 14px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .projects {
+    padding: 60px 15px;
+  }
+  .projects h2 {
+    font-size: 1.6rem;
+    margin-bottom: 25px;
+  }
+  .projects .card h3 {
+    font-size: 1.1rem;
+  }
+  .projects .card p {
+    font-size: 0.85rem;
+  }
+  .projects .card a {
+    padding: 7px 12px;
+    font-size: 0.85rem;
+  }
 }
