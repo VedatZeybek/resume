@@ -47,7 +47,7 @@ const Projects = () => {
   if (error) {
     return (
       <div className="projects">
-        <h2>Projelerim</h2>
+        <h2>My Projects</h2>
         <div className="error">
           <p>❌ Hata: {error}</p>
           <button onClick={fetchProjects}>Tekrar Dene</button>
@@ -72,7 +72,7 @@ const Projects = () => {
               target="_blank" 
               rel="noopener noreferrer"
             >
-              GitHub'da Gör →
+              View on GitHub →
             </a>
           </div>
         ))}
