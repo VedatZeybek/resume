@@ -1,0 +1,37 @@
+name: Build and deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Copy dist to docs
+        run: |
+          rm -rf docs || true
+          cp -r dist docs
+
+      - name: Commit and push docs
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: 'chore(gh-pages): deploy site'
+          file_pattern: 'docs'
+          branch: main
+          author_name: github-actions
+          author_email: github-actions@github.com
