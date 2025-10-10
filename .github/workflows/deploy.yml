@@ -4,12 +4,21 @@ on:
   push:
     branches: [ main ]
 
+# Allow this workflow to write repo contents using GITHUB_TOKEN
+permissions:
+  contents: write
+
 jobs:
   build:
+    # Avoid running when the actor is the actions bot to prevent infinite loops
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Keep the GITHUB_TOKEN in the checkout so later git pushes can use it
+          persist-credentials: true
 
       - name: Use Node.js
         uses: actions/setup-node@v4
@@ -33,5 +42,6 @@ jobs:
           commit_message: 'chore(gh-pages): deploy site'
           file_pattern: 'docs'
           branch: main
-          author_name: github-actions
-          author_email: github-actions@github.com
+          # supported inputs for author identity
+          commit_user_name: github-actions
+          commit_user_email: 41898282+github-actions[bot]@users.noreply.github.com
