@@ -1,8 +1,11 @@
-const express = require('express');
-const cors = require('cors');
-const fs = require('fs').promises;
-const path = require('path');
+import express from 'express';
+import cors from 'cors';
+import fs from 'fs/promises';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fetch from 'node-fetch';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = 5000;
 
@@ -13,7 +16,6 @@ app.use(express.json());
 // GitHub API'den projeleri çek ve projects.json'a kaydet
 async function fetchGitHubRepos(username) {
   try {
-    const fetch = (await import('node-fetch')).default;
     const response = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=100`);
     
     if (!response.ok) {
@@ -37,10 +39,19 @@ async function fetchGitHubRepos(username) {
       topics: repo.topics
     }));
     
-    // projects.json dosyasına kaydet
-    const filePath = path.join(__dirname, 'projects.json');
-    await fs.writeFile(filePath, JSON.stringify(filteredRepos, null, 2));
-    
+  // projects.json dosyasına kaydet (backend)
+  const filePath = path.join(__dirname, 'projects.json');
+  await fs.writeFile(filePath, JSON.stringify(filteredRepos, null, 2));
+
+    // Also update the frontend public/projects.json so the static site can read it
+    try {
+      const publicPath = path.join(__dirname, '..', 'public', 'projects.json');
+      await fs.writeFile(publicPath, JSON.stringify(filteredRepos, null, 2));
+      console.log(`✅ frontend public/projects.json updated (${publicPath})`);
+    } catch (err) {
+      console.warn('⚠️ Could not write to frontend public/projects.json:', err.message);
+    }
+
     console.log(`✅ ${filteredRepos.length} proje GitHub'dan çekildi ve kaydedildi`);
     return filteredRepos;
   } catch (error) {
