@@ -1,0 +1,20 @@
+.footer {
+  padding: 1.25rem 0;
+  text-align: center;
+  color: var(--muted);
+  border-top: 1px solid var(--glass);
+  background: transparent;
+}
+
+.footer .container {
+  font-size: 0.9rem;
+}
+
+.footer a {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.footer a:hover {
+  color: var(--text);
+}

@@ -14,14 +14,14 @@ function Navbar() {
 
   return (
     <header className="navbar">
-      <div className="container">
+      <div className="nav-container">
         <a className="brand" href="#">Vedat Zeybek</a>
-        <nav className={open ? "active" : ""}>
+        <nav className={`nav-links ${open ? "open" : ""}`}>
           <a href="#about">About</a>
           <a href="#projects">Projects</a>
           <a href="#contact">Contact</a>
         </nav>
-        <button className="hamburger" onClick={() => setOpen(!open)}>
+        <button className="menu-toggle" onClick={() => setOpen(!open)}>
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>
           </svg>
@@ -37,25 +37,30 @@ function Hero() {
   return (
     <section
       id="home"
-      className="hero flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-600 via-pink-500 to-red-500 text-white"
+      className="hero animated-gradient"
     >
-      <div className="container text-center">
-        <h1 className="text-5xl font-extrabold mb-6">
-          Hi, I'm <span className="text-yellow-300">Vedat 👋</span>
-        </h1>
-        <p className="text-lg mb-8 max-w-2xl mx-auto">
-          Full Stack Web & Mobile Developer passionate about building modern,
-          scalable, and responsive applications 🚀
-        </p>
-        <a
-          href="#projects"
-          className="px-6 py-3 bg-yellow-400 text-black font-semibold rounded-full shadow-lg hover:scale-110 transform transition duration-300"
-        >
-          See my work
-        </a>
+      <div className="container hero-flex">
+        <div className="hero-image">
+          <img src="/me.jpeg" alt="Vedat Zeybek" className="profile-image" />
+        </div>
+        <div className="hero-text">
+          <h1 className="text-5xl font-extrabold mb-6">
+            Hi, I'm <span className="accent-text">Vedat </span>
+          </h1>
+          <p className="text-lg mb-8 max-w-2xl mx-auto">
+            Full Stack Web & Mobile Developer passionate about building modern,
+            scalable, and responsive applications 
+          </p>
+          <a
+            href="#projects"
+            className="cta-button"
+          >
+            See my work
+          </a>
+        </div>
       </div>
     </section>
-  )
+  );
 }
 
 
@@ -69,7 +74,6 @@ function About() {
         </div>
 
         <div className="about-text">
-          <h3>I'm Vedat 👨‍💻</h3>
           <p>
             Full Stack Web & Mobile Developer with experience in{" "}
             <strong>Flutter, React, and Node.js</strong>. Passionate about building 
@@ -78,9 +82,9 @@ function About() {
           </p>
 
           <ul>
-            <li>⚡ Frontend: React, Flutter</li>
-            <li>⚡ Backend: Node.js, Express</li>
-            <li>⚡ Database: PostgreSQL, MongoDB</li>
+            <li> Frontend: React, Flutter</li>
+            <li> Backend: Node.js, Express</li>
+            <li> Database: PostgreSQL, MongoDB</li>
           </ul>
 
           <a href="#contact" className="btn">Let’s Connect</a>

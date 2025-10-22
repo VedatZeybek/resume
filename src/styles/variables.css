@@ -1,0 +1,28 @@
+:root {
+  /* Colors */
+  --bg: #0f1720;
+  --surface: #0b1220;
+  --muted: #94a3b8;
+  --text: #e6eef7;
+  --accent: #9ca3ff;
+  --glass: rgba(255, 255, 255, 0.04);
+  --card-bg: rgba(255, 255, 255, 0.03);
+  --card-elev: rgba(2, 6, 23, 0.6);
+  
+  /* Layout */
+  --container-max: 1300px;
+  
+  /* Transitions */
+  --transition-base: 0.2s ease;
+  
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(2, 6, 23, 0.2);
+  --shadow-md: 0 6px 18px rgba(2, 6, 23, 0.3);
+  --shadow-lg: 0 8px 30px rgba(2, 6, 23, 0.4);
+  
+  /* Border Radius */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 999px;
+}

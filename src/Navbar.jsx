@@ -1,12 +1,19 @@
 import { useState } from "react";
 
+
+import me from './assets/me.jpeg';
+
+
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <header className="navbar">
       <div className="container nav-container">
-        <a className="brand" href="#">Vedat</a>
+        <div className="brand-container">
+          <img src={me} alt="Vedat Zeybek" className="brand-image" />
+          <a className="brand" href="#">Vedat</a>
+        </div>
 
         {/* Hamburger menü butonu */}
         <button className="menu-toggle" onClick={() => setIsOpen(!isOpen)}>
