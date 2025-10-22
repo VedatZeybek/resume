@@ -5,6 +5,7 @@ import React from 'react'
 import Projects from './Projects';
 
 import soft1 from './assets/soft1.jpeg';
+import me1 from './assets/me.jpeg';
 
 
 // Simple CSS (create src/styles.css and import it in main.jsx)
@@ -41,7 +42,7 @@ function Hero() {
     >
       <div className="container hero-flex">
         <div className="hero-image">
-          <img src="/me.jpeg" alt="Vedat Zeybek" className="profile-image" />
+          <img src={me1} alt="Vedat Zeybek" className="profile-image" />
         </div>
         <div className="hero-text">
           <h1 className="text-5xl font-extrabold mb-6">
