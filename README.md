@@ -18,6 +18,18 @@ npm run preview
 
 Vite uses a relative base, so `dist/` can be served from a domain root or subdirectory. Publishing is separate from the local build.
 
+## Publish to GitHub Pages
+
+Live URL: https://vedatzeybek.github.io/resume/
+
+The existing Pages configuration publishes the root of the `gh-pages` branch. Commit source changes and push `main`, then run:
+
+```sh
+npm run deploy
+```
+
+This builds the production site, checks out `gh-pages` in a temporary worktree, replaces its generated files with `dist/`, adds `.nojekyll`, and pushes a normal deployment commit. Source files stay on `main`. GitHub Pages then publishes the branch; it may take a few minutes. Git push access to the repository is required. No access token is stored in the project. A failed deployment preserves its temporary checkout for inspection, and concurrent remote updates are rejected rather than overwritten.
+
 ## Edit content
 
 - `src/data/profile.ts`: professional title, location, email, phone, GitHub, LinkedIn and resume URL.
